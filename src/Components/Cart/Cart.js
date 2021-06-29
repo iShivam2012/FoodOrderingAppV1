@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Overlay from "../Common/Modal";
 import classes from "./Cart.module.css";
 import CartContext from "../../Store/cart-context";
 import CartItem from "./CartItem";
+import Checkout from "./Checkout";
 
 const Cart = (props) => {
+  const [isCheckout, setIsCheckout] = useState(false);
+
   const ctx = useContext(CartContext);
   const totalAmount = `$${ctx.totalAmount.toFixed(2)}`;
   const hasItems = ctx.items.length > 0;
@@ -31,6 +34,10 @@ const Cart = (props) => {
     </ul>
   );
 
+  const onOrderHandler = () => {
+    setIsCheckout(true);
+  };
+
   return (
     <Overlay onHideCart={props.onHideCart}>
       {cartItems}
@@ -38,12 +45,19 @@ const Cart = (props) => {
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      <div className={classes.actions}>
-        <button onClick={props.onHideCart} className={classes["button--alt"]}>
-          Close
-        </button>
-        {hasItems && <button className={classes.button}>Order</button>}
-      </div>
+      {isCheckout && <Checkout onCancel={props.onHideCart} />}
+      {!isCheckout && (
+        <div className={classes.actions}>
+          <button onClick={props.onHideCart} className={classes["button--alt"]}>
+            Close
+          </button>
+          {hasItems && (
+            <button className={classes.button} onClick={onOrderHandler}>
+              Order
+            </button>
+          )}
+        </div>
+      )}
     </Overlay>
   );
 };
