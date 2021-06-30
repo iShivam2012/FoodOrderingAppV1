@@ -38,6 +38,25 @@ const Cart = (props) => {
     setIsCheckout(true);
   };
 
+  const onSubmitHandler = (userData) => {
+    fetch("https://foodorderingappv1-default-rtdb.firebaseio.com/order.json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user: userData,
+        order: ctx.items,
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      });
+  };
+
   return (
     <Overlay onHideCart={props.onHideCart}>
       {cartItems}
@@ -45,7 +64,9 @@ const Cart = (props) => {
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {isCheckout && <Checkout onCancel={props.onHideCart} />}
+      {isCheckout && (
+        <Checkout onConfirm={onSubmitHandler} onCancel={props.onHideCart} />
+      )}
       {!isCheckout && (
         <div className={classes.actions}>
           <button onClick={props.onHideCart} className={classes["button--alt"]}>

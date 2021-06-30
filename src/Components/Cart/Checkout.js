@@ -3,7 +3,7 @@ import classes from "./Checkout.module.css";
 
 const isEmpty = (data) => data.trim() === "";
 
-const isFiveChars = (data) => data.trim().length === 5;
+const isFiveChars = (data) => data.trim().length === 6;
 
 const Checkout = (props) => {
   const nameRef = useRef();
@@ -43,6 +43,12 @@ const Checkout = (props) => {
     if (!isFormValid) {
       return;
     }
+    props.onConfirm({
+      name,
+      street,
+      postal,
+      city,
+    });
     console.log(name, " ", street, " ", postal, " ", city);
   };
 
