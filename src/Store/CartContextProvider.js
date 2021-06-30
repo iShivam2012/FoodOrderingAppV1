@@ -60,6 +60,8 @@ const cartReducer = (state, action) => {
         };
       }
       break;
+    case "CLEAR":
+      return initialState;
     default:
       return initialState;
   }
@@ -82,11 +84,18 @@ const CartContextProvider = (props) => {
     });
   };
 
+  const clearItemHandler = () => {
+    dispatchCartAction({
+      type: "CLEAR",
+    });
+  };
+
   const cartCtx = {
     items: cartState.items,
     totalAmount: cartState.totalAmount,
     addItem: addItemHandler,
     removeItem: removeItemHandler,
+    clearItem: clearItemHandler,
   };
 
   const { Provider } = CartContext;

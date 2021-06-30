@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { Fragment, useContext, useState } from "react";
 import Overlay from "../Common/Modal";
 import classes from "./Cart.module.css";
 import CartContext from "../../Store/cart-context";
@@ -7,6 +7,8 @@ import Checkout from "./Checkout";
 
 const Cart = (props) => {
   const [isCheckout, setIsCheckout] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const ctx = useContext(CartContext);
   const totalAmount = `$${ctx.totalAmount.toFixed(2)}`;
@@ -39,6 +41,7 @@ const Cart = (props) => {
   };
 
   const onSubmitHandler = (userData) => {
+    setIsSubmitting(true);
     fetch("https://foodorderingappv1-default-rtdb.firebaseio.com/order.json", {
       method: "POST",
       headers: {
@@ -55,10 +58,13 @@ const Cart = (props) => {
       .then((data) => {
         console.log(data);
       });
+    setIsSubmitting(false);
+    setSubmitted(true);
+    ctx.clearItem();
   };
 
-  return (
-    <Overlay onHideCart={props.onHideCart}>
+  const modalContent = (
+    <Fragment>
       {cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
@@ -78,6 +84,26 @@ const Cart = (props) => {
             </button>
           )}
         </div>
+      )}
+    </Fragment>
+  );
+
+  return (
+    <Overlay onHideCart={props.onHideCart}>
+      {isSubmitting && <p>Sending.....</p>}
+      {!isSubmitting && !submitted && modalContent}
+      {submitted && (
+        <Fragment>
+          <p>Successfully sent the order..</p>
+          <div className={classes.actions}>
+            <button
+              onClick={props.onHideCart}
+              className={classes["button--alt"]}
+            >
+              Close
+            </button>
+          </div>
+        </Fragment>
       )}
     </Overlay>
   );
